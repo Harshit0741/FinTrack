@@ -1,0 +1,17 @@
+node_modules/
+.git/
+.expo/
+.metro-health-check*
+android/
+ios/
+.vscode/
+.claude/
+CLAUDE.md
+AGENTS.md
+.DS_Store
+supabase/.temp/
+.env*.local
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+*.tsbuildinfo
