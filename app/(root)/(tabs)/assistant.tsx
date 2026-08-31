@@ -110,7 +110,7 @@ export default function AssistantScreen() {
       </View>
 
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={Platform.OS === "ios" ? -70 : 0}
         className="flex-1"
       >
@@ -151,7 +151,7 @@ export default function AssistantScreen() {
         <View
           className="flex-row items-center gap-2 px-5 pt-2"
           style={{
-            paddingBottom: Platform.OS === "android" ? insets.bottom - 10 : 90,
+            paddingBottom: Platform.OS === "android" ? 12 : 90,
           }}
         >
           <TextInput
