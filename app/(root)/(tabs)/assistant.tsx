@@ -163,7 +163,8 @@ export default function AssistantScreen() {
             className="flex-1 bg-white border border-[#E8E6DF] rounded-full px-4 py-3 text-sm text-brand-bg"
             onSubmitEditing={() => sendMessage(input)}
             returnKeyType="send"
-            blurOnSubmit={false}
+            // blurOnSubmit={Platform.OS === "ios" ? false : true}
+            submitBehavior="submit"
           />
           <TouchableOpacity
             onPress={() => sendMessage(input)}

@@ -12,6 +12,10 @@ import {
 
 const BIOMETRIC_KEY = "biometricLock";
 
+// Don't re-lock for tiny background/active transitions.
+// Camera, microphone and permission dialogs can cause these.
+const BACKGROUND_LOCK_DELAY = 3000;
+
 export function BiometricLock({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [isLocked, setIsLocked] = useState(false);
@@ -19,9 +23,10 @@ export function BiometricLock({ children }: { children: React.ReactNode }) {
   const isAuthenticating = useRef(false);
   const hasAuthenticated = useRef(false);
 
-  const wasBackgrounded = useRef(false);
+  const backgroundTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const authenticate = useCallback(async () => {
+    // Prevent multiple biometric prompts at the same time.
     if (isAuthenticating.current) return;
 
     const enabled = await AsyncStorage.getItem(BIOMETRIC_KEY);
@@ -33,6 +38,7 @@ export function BiometricLock({ children }: { children: React.ReactNode }) {
       return;
     }
 
+    // Already authenticated during this app session.
     if (hasAuthenticated.current) {
       setIsLocked(false);
       setLoading(false);
@@ -71,6 +77,7 @@ export function BiometricLock({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  // Initial authentication.
   useEffect(() => {
     authenticate();
   }, [authenticate]);
@@ -79,25 +86,60 @@ export function BiometricLock({ children }: { children: React.ReactNode }) {
     const subscription = AppState.addEventListener(
       "change",
       (nextAppState: AppStateStatus) => {
-        /*
-         * IMPORTANT:
-         */
+        // App went to background.
         if (nextAppState === "background") {
-          wasBackgrounded.current = true;
+          // Start a timer instead of immediately locking.
+          if (backgroundTimer.current) {
+            clearTimeout(backgroundTimer.current);
+          }
+
+          backgroundTimer.current = setTimeout(() => {
+            hasAuthenticated.current = false;
+          }, BACKGROUND_LOCK_DELAY);
+
+          return;
         }
 
-        if (nextAppState === "active" && wasBackgrounded.current) {
-          wasBackgrounded.current = false;
+        // App became active again.
+        if (nextAppState === "active") {
+          /*
+           * Cancel the timer if the app returned quickly.
+           *
+           * This is important for:
+           * - Camera
+           * - Scanner
+           * - Microphone
+           * - Permission dialogs
+           * - Native Android UI
+           */
+          if (backgroundTimer.current) {
+            clearTimeout(backgroundTimer.current);
+            backgroundTimer.current = null;
+          }
 
-          setTimeout(() => {
-            hasAuthenticated.current = false;
-            authenticate();
-          }, 500);
+          /*
+           * Only authenticate if the timer already expired.
+           *
+           * If hasAuthenticated is still true, this was only
+           * a temporary native UI transition.
+           */
+          if (!hasAuthenticated.current) {
+            setTimeout(() => {
+              authenticate();
+            }, 300);
+          }
         }
       },
     );
 
-    return () => subscription.remove();
+    return () => {
+      subscription.remove();
+
+      if (backgroundTimer.current) {
+        clearTimeout(backgroundTimer.current);
+        backgroundTimer.current = null;
+      }
+    };
   }, [authenticate]);
 
   if (loading) {
