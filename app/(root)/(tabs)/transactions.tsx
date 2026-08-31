@@ -109,7 +109,7 @@ export default function TransactionsScreen() {
           label,
           frontColor: "#3DDC84",
           spacing: 4,
-          labelWidth: 40,
+          labelWidth: 30,
           labelTextStyle: {
             color: "#8A8D96",
             fontSize: 10,

@@ -3,10 +3,12 @@ import { Feather } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import { Icon, Label, NativeTabs } from "expo-router/unstable-native-tabs";
 import { Platform } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const useNativeTabs = Platform.OS === "ios";
 
 export default function TabLayout() {
+  const insets = useSafeAreaInsets();
   if (useNativeTabs) {
     return (
       <BiometricLock>
@@ -59,7 +61,8 @@ export default function TabLayout() {
             backgroundColor: "#FFFFFF",
             borderTopColor: "#E8E6DF",
             paddingTop: 4,
-            height: 70,
+            height: 70 + insets.bottom,
+            paddingBottom: insets.bottom,
           },
         }}
       >
