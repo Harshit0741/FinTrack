@@ -15,7 +15,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 type ChatMessage = {
   id: string;
@@ -58,6 +61,7 @@ function MessageBubble({ message }: { message: ChatMessage }) {
 export default function AssistantScreen() {
   const { user } = useUser();
   const currency = useUserStore((s) => s.currency);
+  const insets = useSafeAreaInsets();
   const { refetch: refetchTransactions } = useTransactionsQuery();
   const { refetch: refetchBudget } = useBudgetQuery();
 
@@ -144,10 +148,11 @@ export default function AssistantScreen() {
           </View>
         )}
 
-        {/* fixed padding to clear the native tab bar - simplest fix, adjust the 90 if it still overlaps on your device */}
         <View
           className="flex-row items-center gap-2 px-5 pt-2"
-          style={{ paddingBottom: 90 }}
+          style={{
+            paddingBottom: Platform.OS === "android" ? insets.bottom - 10 : 90,
+          }}
         >
           <TextInput
             value={input}

@@ -24,7 +24,6 @@ export function BiometricLock({
     const isAuthenticating = useRef(false);
     const hasAuthenticated = useRef(false);
 
-    // Tracks whether the app REALLY went into background
     const wentToBackground = useRef(false);
 
     const authenticate = useCallback(async () => {
@@ -81,22 +80,17 @@ export function BiometricLock({
         }
     }, []);
 
-    // First app load
     useEffect(() => {
         authenticate();
     }, [authenticate]);
 
-    // Lock only after the app ACTUALLY enters background
     useEffect(() => {
         const subscription = AppState.addEventListener(
             "change",
             (nextAppState: AppStateStatus) => {
-                // App genuinely left
                 if (nextAppState === "background") {
                     wentToBackground.current = true;
                 }
-
-                // Only ask again if it really went to background
                 if (
                     nextAppState === "active" &&
                     wentToBackground.current
@@ -104,7 +98,6 @@ export function BiometricLock({
                     wentToBackground.current = false;
                     hasAuthenticated.current = false;
 
-                    // Small delay prevents conflict with app resume
                     setTimeout(() => {
                         authenticate();
                     }, 300);

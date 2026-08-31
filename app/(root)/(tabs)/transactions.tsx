@@ -13,6 +13,7 @@ import {
   Alert,
   Dimensions,
   FlatList,
+  Platform,
   RefreshControl,
   ScrollView,
   Text,
@@ -21,7 +22,10 @@ import {
   View,
 } from "react-native";
 import { BarChart } from "react-native-gifted-charts";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 const FILTERS = ["All", "Income", "Expense"] as const;
 
@@ -32,12 +36,13 @@ function dayKey(date: Date) {
 function currentMonthDays() {
   const today = startOfDay(new Date());
   return eachDayOfInterval({ start: startOfMonth(today), end: today }).map(
-    (d) => ({ key: dayKey(d), label: format(d, "d MMM") })
+    (d) => ({ key: dayKey(d), label: format(d, "d MMM") }),
   );
 }
 
 export default function TransactionsScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const [activeFilter, setActiveFilter] =
     useState<(typeof FILTERS)[number]>("All");
@@ -77,7 +82,7 @@ export default function TransactionsScreen() {
     return transactions.filter(
       (tx) =>
         tx.description?.toLowerCase().includes(q) ||
-        tx.category.toLowerCase().includes(q)
+        tx.category.toLowerCase().includes(q),
     );
   }, [transactions, search]);
 
@@ -87,12 +92,12 @@ export default function TransactionsScreen() {
       .map(({ key, label }) => {
         const income = transactions
           .filter(
-            (tx) => tx.type === "INCOME" && dayKey(new Date(tx.date)) === key
+            (tx) => tx.type === "INCOME" && dayKey(new Date(tx.date)) === key,
           )
           .reduce((sum, tx) => sum + tx.amount, 0);
         const expense = transactions
           .filter(
-            (tx) => tx.type === "EXPENSE" && dayKey(new Date(tx.date)) === key
+            (tx) => tx.type === "EXPENSE" && dayKey(new Date(tx.date)) === key,
           )
           .reduce((sum, tx) => sum + tx.amount, 0);
         return { label, income, expense };
@@ -105,12 +110,16 @@ export default function TransactionsScreen() {
           frontColor: "#3DDC84",
           spacing: 4,
           labelWidth: 40,
-          labelTextStyle: { color: "#8A8D96", fontSize: 10, textAlign: 'center' }
+          labelTextStyle: {
+            color: "#8A8D96",
+            fontSize: 10,
+            textAlign: "center" as const,
+          },
         },
         {
           value: expense,
           frontColor: "#FF6B4A",
-          spacing: 24
+          spacing: 24,
         },
       ]);
   }, [transactions]);
@@ -121,7 +130,10 @@ export default function TransactionsScreen() {
     try {
       const { count } = await exportTransactionsToCsv(transactions);
       if (count === 0) {
-        Alert.alert("Nothing to export", "No transactions in the export window.");
+        Alert.alert(
+          "Nothing to export",
+          "No transactions in the export window.",
+        );
       }
     } catch (err) {
       console.error("Export failed:", err);
@@ -147,7 +159,7 @@ export default function TransactionsScreen() {
             }
           },
         },
-      ]
+      ],
     );
   };
 
@@ -192,16 +204,18 @@ export default function TransactionsScreen() {
             <TouchableOpacity
               key={filter}
               onPress={() => setActiveFilter(filter)}
-              className={`px-3.5 py-1.5 rounded-full border ${activeFilter === filter
-                ? "bg-brand-bg border-brand-bg"
-                : "bg-white border-[#E8E6DF]"
-                }`}
+              className={`px-3.5 py-1.5 rounded-full border ${
+                activeFilter === filter
+                  ? "bg-brand-bg border-brand-bg"
+                  : "bg-white border-[#E8E6DF]"
+              }`}
             >
               <Text
-                className={`text-xs ${activeFilter === filter
-                  ? "text-white"
-                  : "text-brand-text-secondary"
-                  }`}
+                className={`text-xs ${
+                  activeFilter === filter
+                    ? "text-white"
+                    : "text-brand-text-secondary"
+                }`}
               >
                 {filter}
               </Text>
@@ -213,16 +227,18 @@ export default function TransactionsScreen() {
           <View className="flex-row gap-2">
             <TouchableOpacity
               onPress={() => setActiveAccountId(null)}
-              className={`px-3.5 py-1.5 rounded-full border ${activeAccountId === null
-                ? "bg-brand-bg border-brand-bg"
-                : "bg-white border-[#E8E6DF]"
-                }`}
+              className={`px-3.5 py-1.5 rounded-full border ${
+                activeAccountId === null
+                  ? "bg-brand-bg border-brand-bg"
+                  : "bg-white border-[#E8E6DF]"
+              }`}
             >
               <Text
-                className={`text-xs ${activeAccountId === null
-                  ? "text-white"
-                  : "text-brand-text-secondary"
-                  }`}
+                className={`text-xs ${
+                  activeAccountId === null
+                    ? "text-white"
+                    : "text-brand-text-secondary"
+                }`}
               >
                 All Accounts
               </Text>
@@ -231,16 +247,18 @@ export default function TransactionsScreen() {
               <TouchableOpacity
                 key={account.id}
                 onPress={() => setActiveAccountId(account.id)}
-                className={`px-3.5 py-1.5 rounded-full border ${activeAccountId === account.id
-                  ? "bg-brand-bg border-brand-bg"
-                  : "bg-white border-[#E8E6DF]"
-                  }`}
+                className={`px-3.5 py-1.5 rounded-full border ${
+                  activeAccountId === account.id
+                    ? "bg-brand-bg border-brand-bg"
+                    : "bg-white border-[#E8E6DF]"
+                }`}
               >
                 <Text
-                  className={`text-xs ${activeAccountId === account.id
-                    ? "text-white"
-                    : "text-brand-text-secondary"
-                    }`}
+                  className={`text-xs ${
+                    activeAccountId === account.id
+                      ? "text-white"
+                      : "text-brand-text-secondary"
+                  }`}
                 >
                   {account.name}
                 </Text>
@@ -307,7 +325,10 @@ export default function TransactionsScreen() {
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                   <BarChart
                     data={dailyIncomeExpense}
-                    width={Math.max((dailyIncomeExpense.length / 2) * 45, Dimensions.get('window').width - 80)}
+                    width={Math.max(
+                      (dailyIncomeExpense.length / 2) * 45,
+                      Dimensions.get("window").width - 80,
+                    )}
                     height={120}
                     barWidth={6}
                     hideYAxisText
@@ -338,7 +359,14 @@ export default function TransactionsScreen() {
       <TouchableOpacity
         onPress={() => router.push("/(root)/(tabs)/add-transaction")}
         className="absolute right-5 w-14 h-14 rounded-full bg-brand-bg items-center justify-center shadow-lg"
-        style={{ bottom: 90 }}
+        style={{
+          bottom: Platform.OS === "android" ? insets.bottom - 10 : 90,
+          elevation: 8,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 6 },
+          shadowOpacity: 0.2,
+          shadowRadius: 8,
+        }}
         activeOpacity={0.85}
       >
         <Feather name="plus" size={24} color="#fff" />

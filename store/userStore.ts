@@ -3,7 +3,7 @@ import { create } from "zustand";
 interface UserStore {
   currency: string;
   setCurrency: (value: string) => void;
-  needsOnboarding: boolean | null; // null = not yet determined
+  needsOnboarding: boolean | null;
   setNeedsOnboarding: (value: boolean | null) => void;
 }
 

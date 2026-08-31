@@ -4,7 +4,7 @@
     "slug": "fintrack",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/13.png",
+    "icon": "./assets/images/15.png",
     "scheme": "fintrack",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -18,9 +18,9 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/13.png",
+        "foregroundImage": "./assets/images/15.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/13.png"
+        "monochromeImage": "./assets/images/15.png"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
@@ -33,14 +33,14 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/13.png"
+      "favicon": "./assets/images/15.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/13.png",
+          "image": "./assets/images/15.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",

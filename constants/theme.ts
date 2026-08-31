@@ -1,6 +1,3 @@
-// Raw hex values for use where NativeWind className can't reach
-// (e.g. LinearGradient colors, icon `color` props, placeholderTextColor).
-// Keep in sync with the `brand` palette in tailwind.config.js.
 
 export const AI_GRADIENT: [string, string] = ["#0E9C79", "#1D6FAE"];
 export const AI_GRADIENT_REVERSE: [string, string] = ["#1D6FAE", "#0E9C79"];
