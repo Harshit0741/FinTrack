@@ -14,7 +14,7 @@ const THRESHOLDS = [100, 80];
 function startOfMonth() {
   const d = new Date();
   return new Date(
-    Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1)
+    Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1),
   ).toISOString();
 }
 
@@ -61,12 +61,13 @@ Deno.serve(async () => {
     // actually sent this month — a new month means every threshold resets.
     const alertedThisMonth =
       budget.last_alert_sent &&
-        isSameMonth(new Date(budget.last_alert_sent), now)
+      isSameMonth(new Date(budget.last_alert_sent), now)
         ? budget.last_alert_threshold
         : null;
 
     const threshold = THRESHOLDS.find(
-      (t) => percent >= t && (alertedThisMonth === null || alertedThisMonth < t)
+      (t) =>
+        percent >= t && (alertedThisMonth === null || alertedThisMonth < t),
     );
     if (!threshold) continue;
 
@@ -86,10 +87,11 @@ Deno.serve(async () => {
     const html = wrapEmail(`
       <p style="margin:0 0 16px;">Hi ${user.name ?? "there"},</p>
       <p style="margin:0 0 20px;">
-        ${threshold >= 100
-        ? `You've reached your <strong>${monthLabel}</strong> budget. Here's where things stand:`
-        : `You've used <strong>${threshold}%</strong> of your <strong>${monthLabel}</strong> budget — sending this early so you can pace the rest of the month.`
-      }
+        ${
+          threshold >= 100
+            ? `You've reached your <strong>${monthLabel}</strong> budget. Here's where things stand:`
+            : `You've used <strong>${threshold}%</strong> of your <strong>${monthLabel}</strong> budget — sending this early so you can pace the rest of the month.`
+        }
       </p>
       <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
         <tr>
@@ -110,10 +112,11 @@ Deno.serve(async () => {
         </tr>
       </table>
       <p style="margin:0;color:#5C5F68;">
-        ${threshold >= 100
-        ? "Take a look at your recent transactions in FinTrack to see what pushed you over, and consider adjusting your budget if it no longer fits your spending."
-        : "You're on track for now — keep an eye on your spending for the rest of the month to stay within budget."
-      }
+        ${
+          threshold >= 100
+            ? "Take a look at your recent transactions in FinTrack to see what pushed you over, and consider adjusting your budget if it no longer fits your spending."
+            : "You're on track for now — keep an eye on your spending for the rest of the month to stay within budget."
+        }
       </p>
     `);
 

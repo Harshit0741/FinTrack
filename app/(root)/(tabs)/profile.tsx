@@ -65,8 +65,9 @@ function Row({
         <Feather name={icon} size={15} color={danger ? "#FF6B4A" : "#5C5F68"} />
       </View>
       <Text
-        className={`flex-1 text-sm ${danger ? "text-brand-coral" : "text-brand-bg"
-          }`}
+        className={`flex-1 text-sm ${
+          danger ? "text-brand-coral" : "text-brand-bg"
+        }`}
       >
         {label}
       </Text>
@@ -109,7 +110,7 @@ export default function ProfileScreen() {
     if (!permission.granted) {
       Alert.alert(
         "Permission needed",
-        "Allow photo library access to set a profile picture."
+        "Allow photo library access to set a profile picture.",
       );
       return;
     }
@@ -193,53 +194,44 @@ export default function ProfileScreen() {
   const handleBiometricToggle = async (value: boolean) => {
     try {
       if (value) {
-        const compatible =
-          await LocalAuthentication.hasHardwareAsync();
+        const compatible = await LocalAuthentication.hasHardwareAsync();
 
         if (!compatible) {
           Alert.alert(
             "Not Available",
-            "Your device does not support biometric authentication."
+            "Your device does not support biometric authentication.",
           );
           return;
         }
 
-        const enrolled =
-          await LocalAuthentication.isEnrolledAsync();
+        const enrolled = await LocalAuthentication.isEnrolledAsync();
 
         if (!enrolled) {
           Alert.alert(
             "No Biometrics Found",
-            "Please set up fingerprint or Face ID first."
+            "Please set up fingerprint or Face ID first.",
           );
           return;
         }
 
-        const result =
-          await LocalAuthentication.authenticateAsync({
-            promptMessage: "Enable biometric lock",
-            cancelLabel: "Cancel",
-            disableDeviceFallback: false,
-          });
+        const result = await LocalAuthentication.authenticateAsync({
+          promptMessage: "Enable biometric lock",
+          cancelLabel: "Cancel",
+          disableDeviceFallback: false,
+        });
 
         if (!result.success) {
           return;
         }
       }
 
-      await AsyncStorage.setItem(
-        BIOMETRIC_KEY,
-        value ? "true" : "false"
-      );
+      await AsyncStorage.setItem(BIOMETRIC_KEY, value ? "true" : "false");
 
       setBiometricLock(value);
     } catch (error) {
       console.error("Biometric setting error:", error);
 
-      Alert.alert(
-        "Error",
-        "Could not update biometric settings."
-      );
+      Alert.alert("Error", "Could not update biometric settings.");
     }
   };
 
@@ -343,7 +335,10 @@ export default function ProfileScreen() {
               <Feather name="lock" size={15} color="#5C5F68" />
             </View>
             <Text className="flex-1 text-sm text-brand-bg">Biometric lock</Text>
-            <Switch value={biometricLock} onValueChange={handleBiometricToggle} />
+            <Switch
+              value={biometricLock}
+              onValueChange={handleBiometricToggle}
+            />
           </View>
         </View>
 

@@ -12,7 +12,12 @@ const GEMINI_URL =
 const RESPONSE_SCHEMA = {
   type: "object",
   properties: {
-    tips: { type: "array", items: { type: "string" }, minItems: 2, maxItems: 4 },
+    tips: {
+      type: "array",
+      items: { type: "string" },
+      minItems: 2,
+      maxItems: 4,
+    },
   },
   required: ["tips"],
 };
@@ -21,14 +26,16 @@ async function generateTips(
   currency: string,
   byCategory: Record<string, number>,
   totalExpense: number,
-  totalIncome: number
+  totalIncome: number,
 ) {
   const apiKey = Deno.env.get("GEMINI_API_KEY");
   if (!apiKey) throw new Error("Missing GEMINI_API_KEY");
 
   const breakdown = Object.entries(byCategory)
     .sort((a, b) => b[1] - a[1])
-    .map(([category, amount]) => `${category}: ${amount.toFixed(2)} ${currency}`)
+    .map(
+      ([category, amount]) => `${category}: ${amount.toFixed(2)} ${currency}`,
+    )
     .join(", ");
 
   const prompt = `You are a friendly personal finance coach. Based on this user's last 7 days of activity, write 2-4 short, specific, actionable tips (max 20 words each) to help them save money or manage their finances better. Be encouraging, not preachy. Don't repeat generic advice like "make a budget" unless it's clearly relevant.
@@ -96,7 +103,12 @@ Deno.serve(async () => {
     }
 
     const currency = user.currency ?? "USD";
-    const tips = await generateTips(currency, byCategory, totalExpense, totalIncome);
+    const tips = await generateTips(
+      currency,
+      byCategory,
+      totalExpense,
+      totalIncome,
+    );
     if (tips.length === 0) continue;
 
     const net = totalIncome - totalExpense;
@@ -129,10 +141,11 @@ Deno.serve(async () => {
           <td style="padding:10px 0;border-top:1px solid #E8E6DF;text-align:right;font-weight:600;">${net >= 0 ? "+" : ""}${net.toFixed(2)} ${currency}</td>
         </tr>
       </table>
-      ${topCategories
-        ? `<p style="margin:0 0 6px;font-weight:600;">Where it went</p>
+      ${
+        topCategories
+          ? `<p style="margin:0 0 6px;font-weight:600;">Where it went</p>
              <ul style="margin:0 0 20px;padding-left:18px;list-style:none;">${topCategories}</ul>`
-        : ""
+          : ""
       }
       <p style="margin:0 0 8px;font-weight:600;">Tips for you</p>
       <ol style="margin:0;padding-left:18px;">
