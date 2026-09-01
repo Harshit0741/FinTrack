@@ -45,4 +45,7 @@ app-example
 # generated native folders
 /ios
 /android
+
+supabase/.temp/
+.vscode
 desktop.ini
