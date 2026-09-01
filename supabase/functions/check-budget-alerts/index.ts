@@ -1,14 +1,7 @@
-// Scheduled daily (see scripts/cron_jobs.sql). For every user with a budget,
-// checks this month's expense total against their budget and emails them the
-// first time they cross 80%, then again the first time they cross 100% —
-// each threshold fires once per calendar month via last_alert_threshold /
-// last_alert_sent on the budgets row.
 import { wrapEmail } from "../_shared/emailLayout.ts";
 import { sendEmail } from "../_shared/resend.ts";
 import { createSupabaseAdmin } from "../_shared/supabaseAdmin.ts";
 
-// Ordered highest-first so a user who jumps straight past 100% only gets the
-// 100% email, not both.
 const THRESHOLDS = [100, 80];
 
 function startOfMonth() {
@@ -57,8 +50,6 @@ Deno.serve(async () => {
     const spent = (expenseRows ?? []).reduce((sum, tx) => sum + tx.amount, 0);
     const percent = (spent / budget.amount) * 100;
 
-    // A previous alert only counts against this month's thresholds if it was
-    // actually sent this month — a new month means every threshold resets.
     const alertedThisMonth =
       budget.last_alert_sent &&
       isSameMonth(new Date(budget.last_alert_sent), now)

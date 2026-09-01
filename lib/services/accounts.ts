@@ -19,7 +19,7 @@ export async function getAccounts(supabase: SupabaseClient, userId: string) {
 export async function createAccount(
   supabase: SupabaseClient,
   userId: string,
-  { name, type }: { name: string; type: AccountType }
+  { name, type }: { name: string; type: AccountType },
 ) {
   const { data, error } = await supabase
     .from("accounts")
@@ -31,13 +31,10 @@ export async function createAccount(
   return data as Account;
 }
 
-// Two sequential, guarded updates rather than a single transaction (no Postgres
-// RPC in play here) — unset every other default first, then set the target,
-// so a failure between the two never leaves two accounts marked default.
 export async function setDefaultAccount(
   supabase: SupabaseClient,
   userId: string,
-  accountId: string
+  accountId: string,
 ) {
   const { error: unsetError } = await supabase
     .from("accounts")
@@ -56,7 +53,7 @@ export async function setDefaultAccount(
 export async function updateAccount(
   supabase: SupabaseClient,
   accountId: string,
-  { name, type }: { name: string; type: AccountType }
+  { name, type }: { name: string; type: AccountType },
 ) {
   const { data, error } = await supabase
     .from("accounts")
@@ -69,13 +66,10 @@ export async function updateAccount(
   return data as Account;
 }
 
-// First call (default / force: false) only reports how many transactions would
-// be cascade-deleted, without deleting anything. The UI should show that count
-// in a confirmation Alert, then call again with force: true to actually delete.
 export async function deleteAccount(
   supabase: SupabaseClient,
   accountId: string,
-  { force = false }: { force?: boolean } = {}
+  { force = false }: { force?: boolean } = {},
 ) {
   const { count, error: countError } = await supabase
     .from("transactions")

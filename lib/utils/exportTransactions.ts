@@ -1,11 +1,8 @@
 import { Transaction } from "@/lib/services/transactions";
+import { format } from "date-fns";
 import { Directory, File, Paths } from "expo-file-system";
 import * as Sharing from "expo-sharing";
-import { format } from "date-fns";
 
-// Number of days of history included in the export. Change this to
-// customise the export window (e.g. 90 for a quarter, or make it a
-// parameter if we ever want the user to pick a custom range).
 const EXPORT_WINDOW_DAYS = 30;
 
 function toCsvCell(value: string | number | null) {
@@ -43,7 +40,7 @@ export async function exportTransactionsToCsv(transactions: Transaction[]) {
   cutoff.setDate(cutoff.getDate() - EXPORT_WINDOW_DAYS);
 
   const recentTransactions = transactions.filter(
-    (tx) => new Date(tx.date) >= cutoff
+    (tx) => new Date(tx.date) >= cutoff,
   );
 
   const csv = buildCsv(recentTransactions);

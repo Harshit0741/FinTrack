@@ -1,33 +1,17 @@
-import * as Haptics from 'expo-haptics';
-import { useCallback } from 'react';
-import { Platform } from 'react-native';
+import * as Haptics from "expo-haptics";
+import { useCallback } from "react";
+import { Platform } from "react-native";
 
-/**
- * What a haptic is *for*, rather than which API to call.
- *
- * iOS and web share one API surface — `impactAsync` / `notificationAsync` /
- * `selectionAsync`. Web is not a no-op: expo-haptics drives `navigator.vibrate`
- * there, falling back to an iOS-Safari switch-element trick.
- *
- * Android must not use those. They are simulated with the raw `Vibrator`
- * service, which Expo explicitly does not recommend: it is a coarse timed buzz
- * and nothing like what native Android controls feel like.
- * `performAndroidHapticsAsync` goes through `View.performHapticFeedback`
- * instead, which is exactly what those controls use.
- *
- * Branching on that is the whole reason this file exists, so that no component
- * has to know about it.
- */
 export type HapticIntent =
-  | 'selection'
-  | 'tick'
-  | 'toggle-on'
-  | 'toggle-off'
-  | 'impact-light'
-  | 'impact-medium'
-  | 'success'
-  | 'warning'
-  | 'error';
+  | "selection"
+  | "tick"
+  | "toggle-on"
+  | "toggle-off"
+  | "impact-light"
+  | "impact-medium"
+  | "success"
+  | "warning"
+  | "error";
 
 const ANDROID_HAPTICS: Record<HapticIntent, Haptics.AndroidHaptics> = {
   selection: Haptics.AndroidHaptics.Segment_Tick,
@@ -35,35 +19,35 @@ const ANDROID_HAPTICS: Record<HapticIntent, Haptics.AndroidHaptics> = {
   // possibly producing no vibration at all on devices that cannot make a
   // suitably soft one, which would silently drop repeated ticks.
   tick: Haptics.AndroidHaptics.Clock_Tick,
-  'toggle-on': Haptics.AndroidHaptics.Toggle_On,
-  'toggle-off': Haptics.AndroidHaptics.Toggle_Off,
-  'impact-light': Haptics.AndroidHaptics.Virtual_Key,
-  'impact-medium': Haptics.AndroidHaptics.Long_Press,
+  "toggle-on": Haptics.AndroidHaptics.Toggle_On,
+  "toggle-off": Haptics.AndroidHaptics.Toggle_Off,
+  "impact-light": Haptics.AndroidHaptics.Virtual_Key,
+  "impact-medium": Haptics.AndroidHaptics.Long_Press,
   success: Haptics.AndroidHaptics.Confirm,
   warning: Haptics.AndroidHaptics.Reject,
   error: Haptics.AndroidHaptics.Reject,
 };
 
 function perform(intent: HapticIntent): Promise<void> {
-  if (Platform.OS === 'android') {
+  if (Platform.OS === "android") {
     return Haptics.performAndroidHapticsAsync(ANDROID_HAPTICS[intent]);
   }
 
   switch (intent) {
-    case 'selection':
-    case 'tick':
+    case "selection":
+    case "tick":
       return Haptics.selectionAsync();
-    case 'impact-medium':
+    case "impact-medium":
       return Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    case 'success':
+    case "success":
       return Haptics.notificationAsync(
-        Haptics.NotificationFeedbackType.Success
+        Haptics.NotificationFeedbackType.Success,
       );
-    case 'warning':
+    case "warning":
       return Haptics.notificationAsync(
-        Haptics.NotificationFeedbackType.Warning
+        Haptics.NotificationFeedbackType.Warning,
       );
-    case 'error':
+    case "error":
       return Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     default:
       // toggle-on, toggle-off, impact-light
@@ -83,7 +67,7 @@ function perform(intent: HapticIntent): Promise<void> {
  * invoking it from a Reanimated worklet running on the UI thread will throw —
  * reach for `runOnJS` at those call sites.
  */
-export function triggerHaptic(intent: HapticIntent = 'impact-light'): void {
+export function triggerHaptic(intent: HapticIntent = "impact-light"): void {
   try {
     perform(intent).catch(() => {});
   } catch {
@@ -106,10 +90,10 @@ export function triggerHaptic(intent: HapticIntent = 'impact-light'): void {
  */
 export function useHaptics(enabled: boolean = true) {
   return useCallback(
-    (intent: HapticIntent = 'impact-light') => {
+    (intent: HapticIntent = "impact-light") => {
       if (!enabled) return;
       triggerHaptic(intent);
     },
-    [enabled]
+    [enabled],
   );
 }

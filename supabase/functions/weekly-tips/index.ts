@@ -1,6 +1,3 @@
-// Scheduled weekly (see scripts/cron_jobs.sql). For every user with at least
-// one transaction in the last 7 days, asks Gemini for a few short,
-// personalized tips based on their spending and emails them.
 import { getCategoryConfig } from "../../../constants/categories.ts";
 import { wrapEmail } from "../_shared/emailLayout.ts";
 import { sendEmail } from "../_shared/resend.ts";

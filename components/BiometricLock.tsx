@@ -2,18 +2,15 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as LocalAuthentication from "expo-local-authentication";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-    ActivityIndicator,
-    AppState,
-    AppStateStatus,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  AppState,
+  AppStateStatus,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 const BIOMETRIC_KEY = "biometricLock";
-
-// Don't re-lock for tiny background/active transitions.
-// Camera, microphone and permission dialogs can cause these.
 const BACKGROUND_LOCK_DELAY = 3000;
 
 export function BiometricLock({ children }: { children: React.ReactNode }) {
@@ -26,7 +23,6 @@ export function BiometricLock({ children }: { children: React.ReactNode }) {
   const backgroundTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const authenticate = useCallback(async () => {
-    // Prevent multiple biometric prompts at the same time.
     if (isAuthenticating.current) return;
 
     const enabled = await AsyncStorage.getItem(BIOMETRIC_KEY);
@@ -38,7 +34,6 @@ export function BiometricLock({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    // Already authenticated during this app session.
     if (hasAuthenticated.current) {
       setIsLocked(false);
       setLoading(false);
@@ -77,7 +72,6 @@ export function BiometricLock({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Initial authentication.
   useEffect(() => {
     authenticate();
   }, [authenticate]);
@@ -86,9 +80,7 @@ export function BiometricLock({ children }: { children: React.ReactNode }) {
     const subscription = AppState.addEventListener(
       "change",
       (nextAppState: AppStateStatus) => {
-        // App went to background.
         if (nextAppState === "background") {
-          // Start a timer instead of immediately locking.
           if (backgroundTimer.current) {
             clearTimeout(backgroundTimer.current);
           }
@@ -100,29 +92,12 @@ export function BiometricLock({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        // App became active again.
         if (nextAppState === "active") {
-          /*
-           * Cancel the timer if the app returned quickly.
-           *
-           * This is important for:
-           * - Camera
-           * - Scanner
-           * - Microphone
-           * - Permission dialogs
-           * - Native Android UI
-           */
           if (backgroundTimer.current) {
             clearTimeout(backgroundTimer.current);
             backgroundTimer.current = null;
           }
 
-          /*
-           * Only authenticate if the timer already expired.
-           *
-           * If hasAuthenticated is still true, this was only
-           * a temporary native UI transition.
-           */
           if (!hasAuthenticated.current) {
             setTimeout(() => {
               authenticate();

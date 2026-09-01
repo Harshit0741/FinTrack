@@ -151,7 +151,7 @@ export default function AssistantScreen() {
         <View
           className="flex-row items-center gap-2 px-5 pt-2"
           style={{
-            paddingBottom: Platform.OS === "android" ? 40 : 90,
+            paddingBottom: Platform.OS === "android" ? 12 : 90,
           }}
         >
           <TextInput

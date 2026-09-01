@@ -12,13 +12,13 @@ export type {
   NewTransaction,
   Transaction,
   TransactionFilters,
-  TransactionType,
+  TransactionType
 } from "@/types/transaction";
 
 export async function getTransactions(
   supabase: SupabaseClient,
   userId: string,
-  filters: TransactionFilters = {}
+  filters: TransactionFilters = {},
 ) {
   let query = supabase.from("transactions").select("*").eq("user_id", userId);
 
@@ -31,13 +31,9 @@ export async function getTransactions(
   return data as Transaction[];
 }
 
-// Insert then adjust the account balance as two sequential awaited calls (no
-// Postgres RPC wrapping both yet). If the balance update fails after the
-// insert succeeded, we surface that error rather than swallow it so the UI
-// can warn the user the transaction was recorded but the balance is stale.
 export async function createTransaction(
   supabase: SupabaseClient,
-  payload: NewTransaction
+  payload: NewTransaction,
 ) {
   const { data: transaction, error: insertError } = await supabase
     .from("transactions")
@@ -67,14 +63,12 @@ export async function createTransaction(
   return { transaction: transaction as Transaction, error: null };
 }
 
-// Delete then reverse the balance effect, same sequential-calls caveat as
-// createTransaction — a failure on the reversal is returned, not swallowed.
 export async function deleteTransaction(
   supabase: SupabaseClient,
   transactionId: string,
   accountId: string,
   amount: number,
-  type: TransactionType
+  type: TransactionType,
 ) {
   const { error: deleteError } = await supabase
     .from("transactions")
