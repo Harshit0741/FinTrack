@@ -8,7 +8,7 @@ A full-stack budgeting app for iOS and Android built with Expo and Supabase — 
 
 Click the button below to download and install the app on your Android device:
 
-[![Download APK](https://img.shields.io/badge/Download-APK-red.svg?logo=android&style=for-the-badge)](https://github.com/Harshit0741/Fitness-app/releases/download/FitMe/app-debug.apk)
+[![Download APK](https://img.shields.io/badge/Download-APK-red.svg?logo=android&style=for-the-badge)](https://github.com/Harshit0741/FinTrack/releases/download/FinTrack/FinTrack.apk)
 
 ---
 
