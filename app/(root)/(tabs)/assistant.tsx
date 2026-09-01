@@ -4,10 +4,11 @@ import { askAssistant } from "@/lib/services/assistant";
 import { useUserStore } from "@/store/userStore";
 import { useUser } from "@clerk/expo";
 import { Feather } from "@expo/vector-icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   Text,
@@ -68,6 +69,7 @@ export default function AssistantScreen() {
   const [messages, setMessages] = useState<ChatMessage[]>(INITIAL_MESSAGES);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
 
   const sendMessage = async (text: string) => {
     if (!text.trim() || sending || !user) return;
@@ -102,6 +104,19 @@ export default function AssistantScreen() {
       setSending(false);
     }
   };
+
+  useEffect(() => {
+    const showSub = Keyboard.addListener("keyboardDidShow", () =>
+      setKeyboardVisible(true),
+    );
+    const hideSub = Keyboard.addListener("keyboardDidHide", () =>
+      setKeyboardVisible(false),
+    );
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   return (
     <SafeAreaView className="flex-1 bg-brand-body" edges={["top"]}>
@@ -151,7 +166,8 @@ export default function AssistantScreen() {
         <View
           className="flex-row items-center gap-2 px-5 pt-2"
           style={{
-            paddingBottom: Platform.OS === "android" ? 12 : 90,
+            paddingBottom:
+              Platform.OS === "android" ? (keyboardVisible ? 16 : 12) : 90,
           }}
         >
           <TextInput
