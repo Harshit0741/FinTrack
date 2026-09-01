@@ -2,6 +2,16 @@
 
 A full-stack budgeting app for iOS and Android built with Expo and Supabase — track accounts and transactions, set a monthly budget, and log expenses by typing, scanning a receipt, or just speaking to it.
 
+---
+
+## 📱 APK Download
+
+Click the button below to download and install the app on your Android device:
+
+[![Download APK](https://img.shields.io/badge/Download-APK-red.svg?logo=android&style=for-the-badge)](https://github.com/Harshit0741/Fitness-app/releases/download/FitMe/app-debug.apk)
+
+---
+
 ## ✨ Features
 
 - 🏦 **Accounts** — Manage multiple accounts (cash, bank, credit card, savings) at once. Mark one as your default so new transactions land in the right place automatically, and see a running balance update in real time as you spend or earn.
